@@ -4,6 +4,7 @@ import Header from "../../components/Header"
 
 import { ImMenu3 } from "react-icons/im"
 import { FiArrowRightCircle, FiArrowLeftCircle } from "react-icons/fi"
+import { withSSRAuth } from "../../utils/withSSRAuth"
 
 
 function Anime() {
@@ -54,3 +55,9 @@ function Anime() {
 }
 
 export default Anime
+
+export const getServerSideProps = withSSRAuth(async (ctx) => {
+    return {
+      props: {}
+    }
+  })

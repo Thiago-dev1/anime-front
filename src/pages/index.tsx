@@ -7,6 +7,7 @@ import * as Yup from "yup"
 import { useContext, useEffect } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { useRouter } from 'next/router';
+import { withSSRGuest } from '../utils/withSSRGuest';
 
 
 const Home: NextPage = () => {
@@ -73,3 +74,10 @@ const Home: NextPage = () => {
 }
 
 export default Home
+
+
+export const getServerSideProps = withSSRGuest(async (ctx) => {
+  return {
+    props: {}
+  }
+})

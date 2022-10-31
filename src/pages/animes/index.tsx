@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import CardContent from "../../components/CardContent";
 import Header from "../../components/Header";
 import { AuthContext } from "../../contexts/AuthContext";
+import { withSSRAuth } from "../../utils/withSSRAuth";
 
 function Animes() {
 
@@ -31,3 +32,9 @@ function Animes() {
 }
 
 export default Animes
+
+export const getServerSideProps = withSSRAuth(async (ctx) => {
+    return {
+      props: {}
+    }
+  })
