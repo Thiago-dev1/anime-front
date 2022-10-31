@@ -9,7 +9,7 @@ function Animes() {
     const { user, animesB ,animes } = useContext(AuthContext)
 
     useEffect(() => {
-        animesB()
+        animesB({})
     }, [])
 
     return (

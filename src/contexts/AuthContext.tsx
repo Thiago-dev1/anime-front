@@ -16,6 +16,13 @@ interface AnimesProps {
     }[]
 }
 
+interface SearchAnime {
+    recents?: boolean, 
+    episodes?: boolean,
+    name?: string, 
+    numberEpisode?: number
+}
+
 
 type SignInCredentials = {
     username: string,
@@ -25,7 +32,7 @@ type SignInCredentials = {
 type AuthContextData = {
     signIn(credentials: SignInCredentials): Promise<void>,
     favoriteAnime(anime_id: string): Promise<void>,
-    animesB(recents?: boolean, episodes?: boolean): Promise<void>
+    animesB({episodes, name, numberEpisode, recents}: SearchAnime): Promise<void>
     animes: AnimesProps[],
     isAuthenticated: boolean,
     user: User | undefined
@@ -116,11 +123,15 @@ export function AuthProvaider({children}: AuthProviderProps) {
             //animesB()
     }
 
-    async function animesB(recents?: boolean, episodes?: boolean) {
-        const response = await api.get("animes/list", {params: {recents: recents}})
+    async function animesB({episodes, name, numberEpisode, recents}: SearchAnime) {
+        const response = await api.get("animes/list", {
+            params: {
+                recents: recents,
+                name: name,
+                number: numberEpisode
+            }})
 
         const anime = response.data
-        console.log(anime)
 
         setAnimes(anime)
 

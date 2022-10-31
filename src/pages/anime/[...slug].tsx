@@ -5,13 +5,43 @@ import Header from "../../components/Header"
 import { ImMenu3 } from "react-icons/im"
 import { FiArrowRightCircle, FiArrowLeftCircle } from "react-icons/fi"
 import { withSSRAuth } from "../../utils/withSSRAuth"
+import { useContext, useEffect, useState } from "react"
+import { AuthContext } from "../../contexts/AuthContext"
+import { api } from "../../services/apiClient"
 
+
+interface AnimesProps {
+    id: string,
+    name: string,
+    episodeTotal: number,
+    image: string,
+    favoriteAnimeUser: {
+        id: string,
+        user_id: string,
+        anime_id: string
+    }[],
+    episodeAnime: {
+        title: string
+    }[]
+}
 
 function Anime() {
     const router = useRouter()
     const slug = (router.query.slug as string[]) || []
 
+    const [anime, setAnime] = useState<AnimesProps[]>([])
+
     const [name, number] = slug
+
+    useEffect(() => {
+        api.get("animes/list", {
+            params: {
+                name: name,
+                episodes: true,
+                number: Number(number)
+            }})
+        .then(response => setAnime(response.data))
+    }, [() => {}])
 
 
     return (
@@ -20,16 +50,16 @@ function Anime() {
 
             <div className="w-10/12 mx-auto">
                 <div className="flex gap-2 justify-center">
-                    <h3 className="text-2xl text-[#1BA8DB]">{name} Ep. {number}</h3>
+                    <h3 className="text-2xl text-[#1BA8DB]">{anime[0]?.episodeAnime[0]?.title} Ep. {number}</h3>
                     
                 </div>
                 <div className="flex justify-center">
-                    <iframe width="1280" height="720" src="https://www.youtube.com/embed/iEBe8O2O50M" title="CASIMIRO ESTÁ FAZENDO UMA LISTA DE CONTRATAÇÕES PARA O VASCO EM 2023 | Cortes do Casimito" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                    <iframe width="1280" height="520" src="https://www.youtube.com/embed/iEBe8O2O50M" title="CASIMIRO ESTÁ FAZENDO UMA LISTA DE CONTRATAÇÕES PARA O VASCO EM 2023 | Cortes do Casimito" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
                 </div>
                 <div className="flex items-center gap-4 justify-around px-3">
                     <Link
                         href={`/anime/[...slug]`}
-                        as={`/anime/${name}/${ Number(number) == 1 ? 1 :Number(number) - 1}`}
+                        as={`/anime/${name}/${ Number(number) == 1 ? 1 : Number(number) - 1}`}
                     >
                         <a className="flex items-center gap-1">
                             <FiArrowLeftCircle className="text-[#1BA8DB]" size={28}/>
@@ -41,7 +71,7 @@ function Anime() {
                     </div>
                     <Link
                         href={`/anime/[...slug]`}
-                        as={`/anime/${name}/${Number(number) + 1}`}
+                        as={`/anime/${name}/${Number(number) == anime[0]?.episodeTotal ? number : Number(number) + 1}`}
                     >
                         <a className="flex items-center gap-1">
                             <span className="text-2xl">Proximo</span>

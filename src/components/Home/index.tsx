@@ -29,7 +29,7 @@ function PageHome() {
     const { user, animesB ,animes } = useContext(AuthContext)
 
     useEffect(() => {
-        animesB(true)
+        animesB({recents: true})
     }, [])
 
     return (
