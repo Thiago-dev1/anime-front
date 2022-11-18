@@ -1,12 +1,12 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { api } from '../../../services/apiClient';
 
 
 interface ModalListEpisodesProps {
     name: string,
-    index?: number,
-    data?: string
+    setOpen: Dispatch<SetStateAction<boolean>>
 }
 
 interface AnimesProps {
@@ -19,7 +19,7 @@ interface AnimesProps {
     }[]
 }
 
-function ModalListEpisodes({ name, index, data }: ModalListEpisodesProps) {
+function ModalListEpisodes({ name, setOpen }: ModalListEpisodesProps) {
     const [anime, setAnime] = useState<AnimesProps[]>([])
 
     useEffect(() => {
@@ -37,7 +37,14 @@ function ModalListEpisodes({ name, index, data }: ModalListEpisodesProps) {
             <Dialog.Content className='fixed bg-[#18102E] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded w-[480px] shadow-lg shadow-black/25'>
                 {anime.map(a => a.episodeAnime.map(item => {
                     return (
-                        <p>Esse é o modal {data}</p>
+                        <Link href={`/anime/[...slug]`}
+                            as={`/anime/${name}/${item.number}`}
+                        >
+                            <a>
+                                <p className="text-xl font-bold">{item.title} ep. {item.number}</p>
+                            </a>
+
+                        </Link>
                     )
                 }))}
                 <Dialog.Close
