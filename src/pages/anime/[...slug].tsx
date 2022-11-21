@@ -49,6 +49,11 @@ function Anime() {
             setOpen(false)
     }, [number])
 
+    if(Number(number) > anime[0]?.episodeTotal) {
+        return (
+            <h1>Temos só mente até o ep {anime[0]?.episodeTotal}</h1>
+        )
+    }
 
     return (
         <div >
@@ -67,7 +72,7 @@ function Anime() {
                         href={`/anime/[...slug]`}
                         as={`/anime/${name}/${Number(number) == 1 ? 1 : Number(number) - 1}`}
                     >
-                        <a className="flex items-center gap-1">
+                        <a className={`flex items-center gap-1 ${Number(number) == 1 ? "invisible" : "" }`}>
                             <FiArrowLeftCircle className="text-[#1BA8DB]" size={28} />
                             <span className="text-2xl">Anterior</span>
                         </a>
@@ -85,7 +90,7 @@ function Anime() {
                         href={`/anime/[...slug]`}
                         as={`/anime/${name}/${Number(number) == anime[0]?.episodeTotal ? number : Number(number) + 1}`}
                     >
-                        <a className="flex items-center gap-1">
+                        <a className={`flex items-center gap-1 ${anime[0]?.episodeTotal == Number(number) ? "invisible"  : ""}`}>
                             <span className="text-2xl">Proximo</span>
                             <FiArrowRightCircle className="text-[#1BA8DB]" size={28} />
                         </a>
