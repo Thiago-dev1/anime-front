@@ -25,13 +25,13 @@ const Home: NextPage = () => {
       password: Yup.string().required("Digite sua senha")
     }),
     onSubmit: async (values) => {
-      const data = {
+      const body = {
         username: values.username,
         password: values.password
       }
       try {
         console.log("aqui")
-        await signIn(data)
+        await signIn(body)
       } catch (error) {
         console.warn(error)
       }

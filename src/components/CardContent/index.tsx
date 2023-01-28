@@ -27,7 +27,7 @@ function CardContent({ img, name, totalEpisodes, user_id, anime_id }: CardProps)
     }, [user_id?.length])
 
     return (
-        <div>
+        <div className="flex flex-col">
             <Link href={`/anime/[...slug]`}
             as={`/anime/${name}/1`}
             >

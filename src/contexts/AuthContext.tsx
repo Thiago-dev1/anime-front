@@ -17,9 +17,9 @@ interface AnimesProps {
 }
 
 interface SearchAnime {
-    recents?: boolean, 
+    recents?: boolean,
     episodes?: boolean,
-    name?: string, 
+    name?: string,
     numberEpisode?: number
 }
 
@@ -32,7 +32,7 @@ type SignInCredentials = {
 type AuthContextData = {
     signIn(credentials: SignInCredentials): Promise<void>,
     favoriteAnime(anime_id: string): Promise<void>,
-    animesB({episodes, name, numberEpisode, recents}: SearchAnime): Promise<void>
+    animesB({ episodes, name, numberEpisode, recents }: SearchAnime): Promise<void>
     animes: AnimesProps[],
     isAuthenticated: boolean,
     user: User | undefined
@@ -56,7 +56,7 @@ export function signOut() {
     Router.push("/")
 }
 
-export function AuthProvaider({children}: AuthProviderProps) {
+export function AuthProvaider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<User>()
     const [animes, setAnimes] = useState<AnimesProps[]>([])
 
@@ -64,72 +64,79 @@ export function AuthProvaider({children}: AuthProviderProps) {
 
     useEffect(() => {
         const { 'animex.token': token } = parseCookies()
-         const { 'animex.refresh-token': refresh_token } = parseCookies()
+        const { 'animex.refresh-token': refresh_token } = parseCookies()
 
         if (token) {
             api.get('/me').then(response => {
                 const { id, name } = response.data
-                setUser({ idUser: id, name }) 
+                setUser({ idUser: id, name })
             })
-            .catch(() => {
-                signOut()
-            })
+                .catch(() => {
+                    signOut()
+                })
         }
     }, [])
-    
 
-    async function signIn({username, password}: SignInCredentials) {
+
+    async function signIn({ username, password }: SignInCredentials) {
 
         try {
-            const response = await api.post('sessions',{
+            await api.post('sessions', {
                 username,
                 password
+            }).then(response => {
+                const { token, refresh_token } = response.data
+                const { name, idUser } = response.data.user
+
+
+                setCookie(undefined, 'animex.token', token, {
+                    maxAge: 60 * 60 * 24 * 30,
+                    path: '/'
+                })
+
+                setCookie(undefined, 'animex.refresh-token', refresh_token, {
+                    maxAge: 60 * 60 * 24 * 30,
+                    path: '/'
+                })
+
+                setUser({
+                    idUser,
+                    name
+                })
+
+                api.defaults.headers['Authorization'] = `Bearer ${token}`
+
+                alert("Sucesso!")
+
+                Router.push("/Home")
+            }).catch((err) => {
+                if (err.response.data.message == "Username or password incorrect!") {
+                    return alert("User ou senha inválidos")
+                }
+
             })
 
-            const { token, refresh_token } = response.data
-            const { name, idUser } = response.data.user
-
-
-            setCookie(undefined, 'animex.token', token, {
-                maxAge: 60 * 60 * 24 * 30,
-                path: '/'
-            })
-
-            setCookie(undefined, 'animex.refresh-token', refresh_token, {
-                maxAge: 60 * 60 * 24 * 30,
-                path: '/'
-            })
-     
-            setUser({
-                idUser,
-                name
-            })
-            
-            api.defaults.headers['Authorization'] = `Bearer ${token}`
-
-            alert("Sucesso!")
-
-            Router.push("/Home")
-        } catch (err) {
-            console.log(err)
+        } catch (error) {
+            console.log(error)
         }
     }
 
     async function favoriteAnime(anime_id: string) {
-           await api.post("animes/favorite", {
-                anime_id
-            })
-            
-            //animesB()
+        await api.post("animes/favorite", {
+            anime_id
+        })
+
+        //animesB()
     }
 
-    async function animesB({episodes, name, numberEpisode, recents}: SearchAnime) {
+    async function animesB({ episodes, name, numberEpisode, recents }: SearchAnime) {
         const response = await api.get("animes/list", {
             params: {
                 recents: recents,
                 name: name,
                 number: numberEpisode
-            }})
+            }
+        })
 
         const anime = response.data
 
@@ -138,7 +145,7 @@ export function AuthProvaider({children}: AuthProviderProps) {
     }
 
     return (
-        <AuthContext.Provider value={{signIn, isAuthenticated, user, favoriteAnime, animesB, animes}} >
+        <AuthContext.Provider value={{ signIn, isAuthenticated, user, favoriteAnime, animesB, animes }} >
             {children}
         </AuthContext.Provider>
     )
